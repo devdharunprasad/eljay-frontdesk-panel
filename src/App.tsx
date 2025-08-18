@@ -5,6 +5,8 @@ import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom"
 import LoginForm from "./custom-components/login";
 import PrimarySidebar from "./custom-components/common/PrimarySidebar";
 import PatientsPage from "./custom-components/patients";
+import { Toaster } from "react-hot-toast";
+import PatientDetailsPage from "./custom-components/patients/patient-detail";
 
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -43,6 +45,19 @@ const router = createBrowserRouter([
     ),
   },
   {
+    path: "/patients/:id",
+    element: (
+      <ProtectedRoute>
+        <div className="flex h-screen">
+          <PrimarySidebar />
+          <main style={{ flex: 1, padding: "2rem" }}>
+            <PatientDetailsPage />
+          </main>
+        </div>
+      </ProtectedRoute>
+    ),
+  },
+  {
     path: "/login",
     element: <LoginForm />,
   },
@@ -53,7 +68,8 @@ function App() {
   console.log("API URL:", import.meta.env.API_URL);
   return (
     <CookiesProvider>
-      <RouterProvider router={router} />;
+      <RouterProvider router={router} />
+      <Toaster />
     </CookiesProvider>
   );
 }

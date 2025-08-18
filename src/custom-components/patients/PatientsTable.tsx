@@ -3,22 +3,63 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DropdownMenu, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuContent } from "@/components/ui/dropdown-menu";
 import { MoreVertical } from "lucide-react";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 
 // PatientTable.js
 import { useState } from "react";
 import { useFetch } from "@/hooks/useFetch";
+import PatientCreateDialog from "./CreatePatients";
+import { NavLink } from "react-router-dom";
 const PatientsTable = () => {
   const [page, setPage] = useState(1);
   const limit = 10;
-    const { data, isLoading } = useFetch(`/patients?page=${page}&limit=${limit}`, limit);
+  const [gender, setGender] = useState<string | undefined>(undefined);
+  const [status, setStatus] = useState<string | undefined>(undefined);
+
+  // Build query string based on filters
+  let query = `/patients?page=${page}&limit=${limit}`;
+  if (gender) query += `&gender=${gender === "all" ? "" : gender}`;
+  if (status) query += `&status=${status === "all" ? "" : status}`;
+
+  const { data, isLoading } = useFetch(query, limit);
 console.log(data);
   return (
     <div className="container mx-auto p-4">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-2xl font-semibold">Patients</h2>
-        <div className="flex items-center space-x-2">
-          <Button variant="outline">Filter</Button>
-          <Button variant="default" color="orange">+ Add Patient</Button>
+        <div className="flex items-end space-x-2">
+
+          {/* Gender Filter Dropdown (shadcn/ui) */}
+          <div className="min-w-[120px]">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Gender</label>
+            <Select value={gender ?? ""} onValueChange={val => setGender(val || undefined)}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="All" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All</SelectItem>
+                <SelectItem value="Male">Male</SelectItem>
+                <SelectItem value="Female">Female</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Status Filter Dropdown (shadcn/ui) */}
+          <div className="min-w-[120px]">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+            <Select value={status ?? ""} onValueChange={val => setStatus(val || undefined)}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="All" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All</SelectItem>
+                <SelectItem value="active">Active</SelectItem>
+                <SelectItem value="inactive">Inactive</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <PatientCreateDialog/>
         </div>
       </div>
 
@@ -28,7 +69,7 @@ console.log(data);
         <div className="overflow-x-auto bg-white shadow-md rounded-lg">
           <table className="min-w-full">
             <thead className="bg-gray-100 text-sm text-gray-600">
-              <tr>
+              <tr className="h-12">
                 <th className="p-2">
                   <Checkbox />
                 </th>
@@ -43,8 +84,8 @@ console.log(data);
               </tr>
             </thead>
             <tbody>
-              {data?.data?.map((patient: any) => (
-                <tr key={patient.id} className="border-b hover:bg-gray-50">
+              {data?.patients?.map((patient: any) => (
+                <tr key={patient.id} className="border-b text-sm h-12 hover:bg-gray-50">
                   <td className="p-2">
                     <Checkbox />
                   </td>
@@ -52,7 +93,7 @@ console.log(data);
                     <div className="font-medium">{patient.full_name}</div>
                     <div className="text-sm text-gray-600">{patient.ref_id}</div>
                   </td>
-                  <td className="p-2">{patient.email_address}</td>
+                  <td className="p-2 ">{patient.email_address}</td>
                   <td className="p-2">{patient.mobile_number}</td>
                   <td className="p-2">{patient.age}</td>
                   <td className="p-2">{patient.gender}</td>
@@ -68,8 +109,9 @@ console.log(data);
                         <MoreVertical size={16} className="text-gray-500" />
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem>Edit</DropdownMenuItem>
-                        <DropdownMenuItem>Delete</DropdownMenuItem>
+                        <DropdownMenuItem>
+                          <NavLink className="block h-full w-full" to={`/patients/${patient.patient_id}`}>View</NavLink>
+                        </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </td>
