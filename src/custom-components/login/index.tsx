@@ -33,7 +33,10 @@ const LoginForm = () => {
           minWidth: "320px"
         }}
       >
-        <h2 style={{ textAlign: "center", marginBottom: "1rem" }}>Login</h2>
+        <h2 style={{ textAlign: "center", marginBottom: "0.5rem", color: "#f54a00" }}>Welcome to Eljay Portal</h2>
+        <div style={{ textAlign: "center", marginBottom: "1rem", color: "#374151" }}>
+          Please login to continue
+        </div>
         <Input
           type="email"
           placeholder="Email"
@@ -48,7 +51,7 @@ const LoginForm = () => {
           onChange={e => setPassword(e.target.value)}
           required
         />
-        <Button type="submit" disabled={isLoading}>
+        <Button type="submit" disabled={isLoading} style={{ backgroundColor: "#f54a00", color: "#fff" }}>
           {isLoading ? "Signing In..." : "Sign In"}
         </Button>
       </form>
