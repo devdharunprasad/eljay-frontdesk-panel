@@ -1,7 +1,8 @@
 
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useFetch } from "@/hooks/useFetch";
 import React, { useState } from "react";
+import { useDelete } from "@/hooks/useDelete";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -22,6 +23,8 @@ function getAge(dob: string) {
 
 const PatientDetails: React.FC = () => {
 	const { id } = useParams();
+	const navigate = useNavigate();
+	const { handleDelete, isLoading: isDeleting } = useDelete();
 	const { data, isLoading } = useFetch(`/patients/${id}`,1);
 	const patient = data?.patient;
 	const [editing, setEditing] = useState(false);
@@ -51,35 +54,44 @@ const PatientDetails: React.FC = () => {
 		setForm((prev: any) => ({ ...prev, dob: date.toISOString().slice(0, 10) }));
 	}
 
-	return (
-		<div className="p-6">
-			{/* Header */}
-			<div className="flex items-center gap-4 mb-4">
-				<div className="w-16 h-16 rounded-full bg-orange-100 flex items-center justify-center text-2xl font-bold text-orange-700">
-					{form.full_name.split(" ").map((n: string) => n[0]).join("")}
-				</div>
-				<div className="flex-1">
-					<div className="flex items-center gap-2">
-						<span className="text-xl font-semibold">{form.full_name}</span>
-						{form.type && <Badge variant="secondary">{form.type}</Badge>}
-						<Badge variant="outline" className="bg-blue-100 text-blue-700">{form.status === "active" ? "New" : form.status}</Badge>
+		function handleDeleteClick() {
+			if (!id) return;
+			handleDelete(`/patients/${id}`, () => {
+				navigate("/dashboard/patients");
+			});
+		}
+
+		return (
+			<div className="p-6">
+				{/* Header */}
+				<div className="flex items-center gap-4 mb-4">
+					<div className="w-16 h-16 rounded-full bg-orange-100 flex items-center justify-center text-2xl font-bold text-orange-700">
+						{form.full_name.split(" ").map((n: string) => n[0]).join("")}
 					</div>
-					<div className="text-gray-500 text-sm">
-						Patient ID: {form.patient_id} • Last updated: {form.updated_at?.slice(0, 10) || "-"}
+					<div className="flex-1">
+						<div className="flex items-center gap-2">
+							<span className="text-xl font-semibold">{form.full_name}</span>
+							{form.type && <Badge variant="secondary">{form.type}</Badge>}
+							<Badge variant="outline" className="bg-blue-100 text-blue-700">{form.status === "active" ? "New" : form.status}</Badge>
+						</div>
+						<div className="text-gray-500 text-sm">
+							Patient ID: {form.patient_id} • Last updated: {form.updated_at?.slice(0, 10) || "-"}
+						</div>
 					</div>
+					<DropdownMenu>
+						<DropdownMenuTrigger asChild>
+							<Button variant="outline" size="icon">
+								<MoreVertical />
+							</Button>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent align="end">
+							<DropdownMenuItem onClick={handleEdit}>Edit</DropdownMenuItem>
+							<DropdownMenuItem className="text-red-600" onClick={handleDeleteClick} disabled={isDeleting}>
+								{isDeleting ? "Deleting..." : "Delete"}
+							</DropdownMenuItem>
+						</DropdownMenuContent>
+					</DropdownMenu>
 				</div>
-				<DropdownMenu>
-					<DropdownMenuTrigger asChild>
-						<Button variant="outline" size="icon">
-							<MoreVertical />
-						</Button>
-					</DropdownMenuTrigger>
-					<DropdownMenuContent align="end">
-						<DropdownMenuItem onClick={handleEdit}>Edit</DropdownMenuItem>
-						<DropdownMenuItem className="text-red-600">Delete</DropdownMenuItem>
-					</DropdownMenuContent>
-				</DropdownMenu>
-			</div>
 
 			{/* Card */}
 			<Card className="rounded-xl">

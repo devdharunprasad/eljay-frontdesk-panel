@@ -8,7 +8,7 @@ export const useDelete = () => {
     const handleDelete = async (endpoint: string, onSuccess?: () => void) => {
         setIsLoading(true);
         try {
-            const API_URL = import.meta.env.VITE_APP_API_URL;
+            const API_URL = import.meta.env.VITE_API_URL;
             if (!API_URL) {
                 throw new Error("API URL is not defined. Please check your environment variables.");
             }
