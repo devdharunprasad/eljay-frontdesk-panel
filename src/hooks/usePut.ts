@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { useCookies } from "react-cookie"; // Import react-cookie
+//@ts-ignore
 import { useIsFetched } from "../store/isFetched";
 
 export const usePut = () => {

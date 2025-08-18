@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
-import { Calendar } from "@/components/ui/calendar";
 import { MoreVertical } from "lucide-react";
 
 function getAge(dob: string) {
@@ -50,9 +49,9 @@ const PatientDetails: React.FC = () => {
 	function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
 		setForm((prev: any) => ({ ...prev, [e.target.name]: e.target.value }));
 	}
-	function handleDateChange(date: Date) {
-		setForm((prev: any) => ({ ...prev, dob: date.toISOString().slice(0, 10) }));
-	}
+	// function handleDateChange(date: Date) {
+	// 	setForm((prev: any) => ({ ...prev, dob: date.toISOString().slice(0, 10) }));
+	// }
 
 		function handleDeleteClick() {
 			if (!id) return;
